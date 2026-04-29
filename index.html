@@ -208,6 +208,36 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
 .btn-google:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 .login-note { font-size:12px; color:var(--muted2); line-height:1.6; }
 
+/* LOADING & ACCESS DENIED SCREENS */
+#loading-screen, #access-denied {
+  position:fixed; inset:0; z-index:500; background:var(--bg);
+  display:none; align-items:center; justify-content:center; flex-direction:column; gap:16px;
+}
+.loading-spinner { width:40px; height:40px; border:3px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { color:var(--muted); font-size:14px; }
+.denied-card { background:var(--surface); border:1px solid var(--red-glow); border-radius:24px; padding:48px; width:440px; max-width:95vw; text-align:center; animation:slideUp .4s ease; }
+.denied-icon { font-size:48px; margin-bottom:16px; }
+.denied-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--red); margin-bottom:8px; }
+.denied-text { color:var(--muted); font-size:14px; line-height:1.7; margin-bottom:8px; }
+.denied-email { color:var(--text); font-size:13px; background:var(--surface2); padding:8px 14px; border-radius:var(--radius-sm); margin:12px 0 20px; display:inline-block; }
+
+/* ADMIN */
+.wl-form { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.wl-form .form-input { flex:1; min-width:180px; }
+.wl-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:6px; flex-wrap:wrap; }
+.wl-info { flex:1; min-width:0; }
+.wl-email { font-size:14px; font-weight:500; }
+.wl-meta { font-size:12px; color:var(--muted); margin-top:2px; }
+.wl-status { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+.wl-status.active { background:var(--green-dim); color:var(--green); }
+.wl-status.inactive { background:var(--red-dim); color:var(--red); }
+.wl-toggle { background:var(--surface2); border:1px solid var(--border); color:var(--muted); font-size:12px; padding:4px 12px; border-radius:var(--radius-sm); cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
+.wl-toggle:hover { border-color:var(--border2); color:var(--text); }
+.wl-del { background:none; border:none; color:var(--muted2); font-size:13px; cursor:pointer; padding:4px; border-radius:4px; transition:color .15s; }
+.wl-del:hover { color:var(--red); }
+.admin-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+
 /* MODAL */
 .modal-overlay { position:fixed; inset:0; background:#00000080; backdrop-filter:blur(6px); z-index:200; display:none; align-items:center; justify-content:center; }
 .modal-overlay.open { display:flex; }
@@ -236,6 +266,24 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
 </head>
 <body>
 
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Verificando acesso...</div>
+</div>
+
+<!-- ACCESS DENIED -->
+<div id="access-denied">
+  <div class="denied-card">
+    <div class="denied-icon">🔒</div>
+    <div class="denied-title">Acesso não autorizado</div>
+    <div class="denied-text">O e-mail abaixo não possui uma licença ativa.</div>
+    <div class="denied-email" id="denied-email">—</div>
+    <div class="denied-text" style="margin-bottom:20px">Se você comprou o produto, entre em contato informando seu e-mail do Google para liberar o acesso.</div>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="goBackToLogin()">← Voltar ao login</button>
+  </div>
+</div>
+
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
@@ -247,13 +295,13 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
       Entrar com Google
     </button>
     <div id="login-error" style="display:none;color:var(--red);font-size:13px;margin-bottom:12px;"></div>
-    <div class="login-note">🔒 Apenas você terá acesso aos seus dados.</div>
+    <div class="login-note">🔒 Apenas compradores autorizados têm acesso.</div>
   </div>
 </div>
 
-<button class="ham" onclick="toggleSidebar()">☰</button>
+<button class="ham" onclick="toggleSidebar()" style="display:none">☰</button>
 
-<div class="app">
+<div class="app" style="display:none">
   <aside class="sidebar" id="sidebar">
     <div class="logo">fin<span>track</span></div>
     <div class="nav-section">Principal</div>
@@ -263,6 +311,8 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
     <div class="nav-section">Crescimento</div>
     <div class="nav-item" onclick="goTo('investments',this)"><span class="icon">📈</span> Investimentos</div>
     <div class="nav-item remind-nav" onclick="goTo('remind',this)"><span class="icon">⚡</span> Remind</div>
+    <div class="nav-section" style="margin-top:8px">Admin</div>
+    <div class="nav-item" id="admin-nav" style="display:none" onclick="goTo('admin',this)"><span class="icon">🛡️</span> Compradores</div>
     <div class="sidebar-footer">
       <div class="user-pill" onclick="logoutUser()" id="user-pill" style="display:none">
         <div class="user-avatar" id="user-avatar">?</div>
@@ -419,6 +469,26 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
       <div class="tx-list" id="remind-tx-list"></div>
     </div>
 
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div class="topbar">
+        <div class="page-title">🛡️ Compradores <span id="wl-count"></span></div>
+      </div>
+      <div class="stat-card blue" style="margin-bottom:24px;padding:20px 24px">
+        <div class="stat-label" style="margin-bottom:12px">Adicionar novo comprador</div>
+        <div class="wl-form">
+          <input class="form-input" id="wl-email-input" placeholder="E-mail do Google do comprador" type="email" />
+          <input class="form-input" id="wl-name-input" placeholder="Nome (opcional)" style="max-width:200px" />
+          <button class="btn btn-primary" onclick="addToWhitelist()">+ Liberar acesso</button>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">
+          💡 Quando alguém comprar na Kiwify, você receberá um e-mail com os dados do comprador. Cole o e-mail do Google dele aqui e o acesso é liberado na hora.
+        </div>
+      </div>
+      <div class="section-title" style="margin-bottom:14px">Acessos ativos</div>
+      <div id="whitelist-list"></div>
+    </div>
+
   </main>
 </div>
 
@@ -495,6 +565,21 @@ const db    = getFirestore(fbApp);
 const auth  = getAuth(fbApp);
 let unsubTx = null, unsubAss = null;
 
+// ── CONFIG — coloque SEU e-mail aqui (admin sempre tem acesso)
+const ADMIN_EMAIL = 'SEU_EMAIL_AQUI@gmail.com';
+
+// ── Verifica se o e-mail está na whitelist do Firestore
+async function isWhitelisted(email) {
+  if (!email) return false;
+  if (email === ADMIN_EMAIL) return true; // admin sempre passa
+  try {
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const ref = doc(db, 'whitelist', email.toLowerCase().replace(/\./g,'_'));
+    const snap = await getDoc(ref);
+    return snap.exists() && snap.data().active === true;
+  } catch(e) { return false; }
+}
+
 // ── AUTH
 window.loginGoogle = async () => {
   const btn=document.getElementById('btn-google-login'), err=document.getElementById('login-error');
@@ -510,19 +595,41 @@ window.logoutUser = async () => {
   if (!confirm('Deseja sair?')) return;
   if(unsubTx){unsubTx();unsubTx=null;} if(unsubAss){unsubAss();unsubAss=null;}
   await signOut(auth);
+  showScreen('login');
 };
-onAuthStateChanged(auth, user => {
+
+function showScreen(screen) {
+  document.getElementById('login-screen').style.display    = screen==='login'   ? 'flex' : 'none';
+  document.getElementById('access-denied').style.display   = screen==='denied'  ? 'flex' : 'none';
+  document.getElementById('loading-screen').style.display  = screen==='loading' ? 'flex' : 'none';
+  document.querySelector('.app').style.display             = screen==='app'     ? 'flex' : 'none';
+  document.querySelector('.ham').style.display             = screen==='app'     ? 'flex' : 'none';
+}
+window.goBackToLogin = () => { signOut(auth); showScreen('login'); };
+
+onAuthStateChanged(auth, async user => {
   if (user) {
-    document.getElementById('login-screen').style.display='none';
+    showScreen('loading');
+    const allowed = await isWhitelisted(user.email);
+    if (!allowed) {
+      showScreen('denied');
+      document.getElementById('denied-email').textContent = user.email;
+      return;
+    }
+    // Acesso liberado
+    showScreen('app');
     const pill=document.getElementById('user-pill'), av=document.getElementById('user-avatar'), nm=document.getElementById('user-name');
     pill.style.display='flex'; nm.textContent=user.displayName||user.email;
     av.innerHTML=user.photoURL?`<img src="${user.photoURL}" referrerpolicy="no-referrer">`:(user.displayName||user.email)[0].toUpperCase();
+    // Mostra painel admin se for o dono
+    if (user.email === ADMIN_EMAIL) document.getElementById('admin-nav').style.display='flex';
     startListeners(user.uid);
   } else {
-    document.getElementById('login-screen').style.display='flex';
-    document.getElementById('user-pill').style.display='none';
     if(unsubTx){unsubTx();unsubTx=null;} if(unsubAss){unsubAss();unsubAss=null;}
-    transactions=[]; assets=[]; renderAll();
+    transactions=[]; assets=[];
+    document.getElementById('user-pill').style.display='none';
+    document.getElementById('admin-nav').style.display='none';
+    showScreen('login');
   }
 });
 function startListeners(uid) {
@@ -536,6 +643,63 @@ function startListeners(uid) {
     err=>console.error(err)
   );
 }
+
+// ── ADMIN — gerenciar whitelist
+let adminUnsubWhitelist = null;
+
+function renderAdminPanel() {
+  if (!adminUnsubWhitelist) {
+    adminUnsubWhitelist = onSnapshot(collection(db,'whitelist'), snap => {
+      const users = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      const list = document.getElementById('whitelist-list');
+      const count = document.getElementById('wl-count');
+      count.textContent = users.length + ' comprador' + (users.length!==1?'es':'');
+      if (!users.length) {
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">Nenhum comprador ainda</div>';
+        return;
+      }
+      list.innerHTML = users.map(u => `
+        <div class="wl-item">
+          <div class="wl-info">
+            <div class="wl-email">${u.email||u.id.replace(/_/g,'.')}</div>
+            <div class="wl-meta">${u.name||'—'} · Adicionado em ${u.addedAt ? new Date(u.addedAt.seconds*1000).toLocaleDateString('pt-BR') : '—'}</div>
+          </div>
+          <div class="wl-status ${u.active?'active':'inactive'}">${u.active?'✓ Ativo':'✗ Bloqueado'}</div>
+          <button class="wl-toggle" onclick="toggleAccess('${u.id}',${u.active})">${u.active?'Bloquear':'Reativar'}</button>
+          <button class="wl-del" onclick="removeAccess('${u.id}')">Remover</button>
+        </div>`).join('');
+    });
+  }
+}
+
+window.addToWhitelist = async () => {
+  const emailInput = document.getElementById('wl-email-input');
+  const nameInput  = document.getElementById('wl-name-input');
+  const email = emailInput.value.trim().toLowerCase();
+  const name  = nameInput.value.trim();
+  if (!email || !email.includes('@')) { alert('E-mail inválido.'); return; }
+  const key = email.replace(/\./g,'_');
+  try {
+    const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    await setDoc(doc(db,'whitelist',key), {
+      email, name, active: true,
+      addedAt: serverTimestamp()
+    });
+    emailInput.value=''; nameInput.value='';
+  } catch(e) { alert('Erro: '+e.message); }
+};
+
+window.toggleAccess = async (id, current) => {
+  try {
+    const { updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    await updateDoc(doc(db,'whitelist',id), { active: !current });
+  } catch(e) { alert('Erro: '+e.message); }
+};
+
+window.removeAccess = async id => {
+  if (!confirm('Remover acesso permanentemente?')) return;
+  try { await deleteDoc(doc(db,'whitelist',id)); } catch(e){ alert('Erro:'+e.message); }
+};
 function setDbStatus(ok) {
   const el=document.getElementById('db-status'); if(!el) return;
   el.textContent=ok?'🟢 Firebase conectado':'🔴 Sem conexão'; el.style.color=ok?'var(--green)':'var(--red)';
@@ -625,6 +789,7 @@ function goTo(page,el) {
   if(page==='categories')  renderCategories();
   if(page==='investments') renderInvestments();
   if(page==='remind')      renderRemind();
+  if(page==='admin')       renderAdminPanel();
   if(window.innerWidth<=700) document.getElementById('sidebar').classList.remove('open');
 }
 function goToAll(){goTo('transactions',document.querySelectorAll('.nav-item')[1]);}
