@@ -308,9 +308,6 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
     <div class="nav-item active" onclick="goTo('dashboard',this)"><span class="icon">◈</span> Dashboard</div>
     <div class="nav-item" onclick="goTo('transactions',this)"><span class="icon">↕</span> Transações</div>
     <div class="nav-item" onclick="goTo('categories',this)"><span class="icon">◉</span> Categorias</div>
-    <div class="nav-section">Crescimento</div>
-    <div class="nav-item" onclick="goTo('investments',this)"><span class="icon">📈</span> Investimentos</div>
-    <div class="nav-item remind-nav" onclick="goTo('remind',this)"><span class="icon">⚡</span> Remind</div>
     <div class="nav-section" style="margin-top:8px">Admin</div>
     <div class="nav-item" id="admin-nav" style="display:none" onclick="goTo('admin',this)"><span class="icon">🛡️</span> Compradores</div>
     <div class="sidebar-footer">
@@ -345,24 +342,17 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
           <button class="btn btn-expense" onclick="openModal('expense')">− Despesa</button>
         </div>
       </div>
-      <div class="stats-grid">
+      <div class="stats-grid-3">
         <div class="stat-card green"><div class="stat-label">Total Receitas</div><div class="stat-value green" id="stat-income">R$ 0,00</div><div class="stat-sub" id="stat-income-count">0 entradas</div></div>
         <div class="stat-card red"><div class="stat-label">Total Despesas</div><div class="stat-value red" id="stat-expense">R$ 0,00</div><div class="stat-sub" id="stat-expense-count">0 saídas</div></div>
         <div class="stat-card blue"><div class="stat-label">Saldo do Mês</div><div class="stat-value" id="stat-balance" style="color:var(--blue)">R$ 0,00</div><div class="stat-sub" id="stat-balance-sub">—</div></div>
-        <div class="stat-card purple"><div class="stat-label">Investimentos</div><div class="stat-value" id="stat-invest" style="color:var(--purple)">R$ 0,00</div><div class="stat-sub">aportes + rendimentos</div></div>
       </div>
-      <div class="profit-grid">
+      <div style="margin-bottom:28px">
         <div class="profit-card">
-          <div class="profit-card-title">💼 Lucro Operacional</div>
-          <div class="profit-row"><span class="profit-label">Salário + Serviços</span><span class="profit-value pos" id="p-op-in">R$ 0,00</span></div>
-          <div class="profit-row"><span class="profit-label">Despesas Operacionais</span><span class="profit-value neg" id="p-op-out">R$ 0,00</span></div>
-          <div class="profit-row total"><span class="profit-label">Lucro Líquido</span><span class="profit-value neutral" id="p-op-net">R$ 0,00</span></div>
-        </div>
-        <div class="profit-card">
-          <div class="profit-card-title">📈 Resultado Investimentos</div>
-          <div class="profit-row"><span class="profit-label">Rendimentos recebidos</span><span class="profit-value pos" id="p-inv-in">R$ 0,00</span></div>
-          <div class="profit-row"><span class="profit-label">Aportes realizados</span><span class="profit-value neg" id="p-inv-out">R$ 0,00</span></div>
-          <div class="profit-row total"><span class="profit-label">Fluxo líquido</span><span class="profit-value neutral" id="p-inv-net">R$ 0,00</span></div>
+          <div class="profit-card-title">💰 Resumo do Mês</div>
+          <div class="profit-row"><span class="profit-label">Total de receitas</span><span class="profit-value pos" id="p-op-in">R$ 0,00</span></div>
+          <div class="profit-row"><span class="profit-label">Total de despesas</span><span class="profit-value neg" id="p-op-out">R$ 0,00</span></div>
+          <div class="profit-row total"><span class="profit-label">Resultado líquido</span><span class="profit-value neutral" id="p-op-net">R$ 0,00</span></div>
         </div>
       </div>
       <div class="charts-row">
@@ -412,63 +402,6 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
       <div class="chart-card"><div class="chart-card-header"><div class="chart-card-title">Gastos por Categoria</div></div><div style="height:260px"><canvas id="chart-bar"></canvas></div></div>
     </div>
 
-    <!-- INVESTMENTS -->
-    <div class="page" id="page-investments">
-      <div class="topbar">
-        <div class="page-title">Investimentos</div>
-        <div class="topbar-actions"><button class="btn btn-primary" onclick="openAssetModal()">+ Ativo</button></div>
-      </div>
-      <div class="stats-grid-3">
-        <div class="stat-card green"><div class="stat-label">Patrimônio Total</div><div class="stat-value green" id="inv-total">R$ 0,00</div><div class="stat-sub">valor atual dos ativos</div></div>
-        <div class="stat-card blue"><div class="stat-label">Total Investido</div><div class="stat-value blue" id="inv-invested">R$ 0,00</div><div class="stat-sub">soma dos aportes</div></div>
-        <div class="stat-card purple"><div class="stat-label">Retorno Total</div><div class="stat-value" id="inv-return" style="color:var(--purple)">R$ 0,00</div><div class="stat-sub" id="inv-return-pct">0,00%</div></div>
-      </div>
-      <div class="inv-tabs">
-        <button class="inv-tab active" onclick="switchInvTab('ativos',this)">Carteira de Ativos</button>
-        <button class="inv-tab" onclick="switchInvTab('aportes',this)">Aportes & Rendimentos</button>
-        <button class="inv-tab" onclick="switchInvTab('patrimonio',this)">Evolução do Patrimônio</button>
-      </div>
-      <div class="inv-section active" id="inv-ativos"><div class="asset-grid" id="asset-grid"></div></div>
-      <div class="inv-section" id="inv-aportes">
-        <div class="filter-bar">
-          <button class="filter-chip active" onclick="setInvFilter('all',this)">Todos</button>
-          <button class="filter-chip" onclick="setInvFilter('income',this)">Rendimentos</button>
-          <button class="filter-chip" onclick="setInvFilter('expense',this)">Aportes</button>
-        </div>
-        <div class="tx-list" id="inv-tx-list"></div>
-      </div>
-      <div class="inv-section" id="inv-patrimonio">
-        <div class="chart-card" style="margin-bottom:16px"><div class="chart-card-header"><div class="chart-card-title">Evolução do Patrimônio</div><div class="chart-card-sub">Valor acumulado ao longo do tempo</div></div><div style="height:280px"><canvas id="chart-patrimony"></canvas></div></div>
-        <div class="chart-card"><div class="chart-card-header"><div class="chart-card-title">Distribuição por Tipo de Ativo</div></div><div style="height:240px;display:flex;align-items:center;justify-content:center"><canvas id="chart-asset-donut" style="max-width:240px;max-height:240px"></canvas></div></div>
-      </div>
-    </div>
-
-    <!-- REMIND -->
-    <div class="page" id="page-remind">
-      <div class="topbar">
-        <div class="page-title" style="color:var(--remind)">⚡ Remind</div>
-        <div class="topbar-actions">
-          <button class="btn btn-income" onclick="openModal('income','remind_in')">+ Receita Remind</button>
-          <button class="btn btn-expense" onclick="openModal('expense','remind_out')">− Gasto Remind</button>
-        </div>
-      </div>
-      <div class="remind-banner">
-        <div class="remind-logo">Remind</div>
-        <div class="remind-desc">Acompanhe todos os fluxos financeiros do seu principal projeto.<br>Todas as receitas, gastos e o saldo dedicado.</div>
-      </div>
-      <div class="stats-grid-3">
-        <div class="stat-card green"><div class="stat-label">Receitas Remind</div><div class="stat-value green" id="remind-income">R$ 0,00</div><div class="stat-sub" id="remind-income-sub">total acumulado</div></div>
-        <div class="stat-card red"><div class="stat-label">Gastos Remind</div><div class="stat-value red" id="remind-expense">R$ 0,00</div><div class="stat-sub" id="remind-expense-sub">total acumulado</div></div>
-        <div class="stat-card remind-card"><div class="stat-label">Saldo Remind</div><div class="stat-value remind" id="remind-balance">R$ 0,00</div><div class="stat-sub" id="remind-balance-sub">resultado</div></div>
-      </div>
-      <div class="charts-row" style="margin-bottom:24px">
-        <div class="chart-card"><div class="chart-card-header"><div class="chart-card-title">Fluxo Remind por Mês</div></div><div style="height:220px"><canvas id="chart-remind-line"></canvas></div></div>
-        <div class="chart-card"><div class="chart-card-header"><div class="chart-card-title">Receitas vs Gastos</div></div><div style="height:220px;display:flex;align-items:center;justify-content:center"><canvas id="chart-remind-donut" style="max-width:220px;max-height:220px"></canvas></div></div>
-      </div>
-      <div class="section-header"><div class="section-title">Histórico Remind</div></div>
-      <div class="tx-list" id="remind-tx-list"></div>
-    </div>
-
     <!-- ADMIN -->
     <div class="page" id="page-admin">
       <div class="topbar">
@@ -512,35 +445,6 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
   </div>
 </div>
 
-<!-- MODAL ATIVO -->
-<div class="modal-overlay" id="asset-modal-overlay" onclick="closeAssetModalOnBg(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="closeAssetModal()">✕</button>
-    <div class="modal-title">Adicionar Ativo</div>
-    <div class="form-row"><label class="form-label">Ticker / Nome</label><input class="form-input" id="asset-ticker" placeholder="Ex: IVVB11, Tesouro Selic, BTC..." /></div>
-    <div class="form-grid">
-      <div class="form-row"><label class="form-label">Tipo de Ativo</label>
-        <select class="form-select" id="asset-type">
-          <option value="acoes">📊 Ações</option>
-          <option value="fiis">🏢 FIIs</option>
-          <option value="tesouro">🏛️ Tesouro Direto</option>
-          <option value="crypto">₿ Cripto</option>
-          <option value="renda_fixa">💰 Renda Fixa</option>
-          <option value="etf">📦 ETF</option>
-          <option value="outros">📁 Outros</option>
-        </select>
-      </div>
-      <div class="form-row"><label class="form-label">Data do Aporte</label><input class="form-input" id="asset-date" type="date" /></div>
-    </div>
-    <div class="form-grid">
-      <div class="form-row"><label class="form-label">Valor Investido (R$)</label><input class="form-input" id="asset-invested" type="number" min="0" step="0.01" placeholder="0,00" /></div>
-      <div class="form-row"><label class="form-label">Valor Atual (R$)</label><input class="form-input" id="asset-current" type="number" min="0" step="0.01" placeholder="0,00" /></div>
-    </div>
-    <div class="form-row"><label class="form-label">Observação (opcional)</label><input class="form-input" id="asset-note" placeholder="Corretora, detalhes..." /></div>
-    <div style="margin-top:8px"><button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="saveAsset()">Adicionar Ativo</button></div>
-  </div>
-</div>
-
 <script type="module">
 import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc,
@@ -563,10 +467,10 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
 const auth  = getAuth(fbApp);
-let unsubTx = null, unsubAss = null;
+let unsubTx = null;
 
 // ── CONFIG — coloque SEU e-mail aqui (admin sempre tem acesso)
-const ADMIN_EMAIL = 'phelegal88@gmail.com';
+const ADMIN_EMAIL = 'SEU_EMAIL_AQUI@gmail.com';
 
 // ── Verifica se o e-mail está na whitelist do Firestore
 async function isWhitelisted(email) {
@@ -593,7 +497,7 @@ window.loginGoogle = async () => {
 };
 window.logoutUser = async () => {
   if (!confirm('Deseja sair?')) return;
-  if(unsubTx){unsubTx();unsubTx=null;} if(unsubAss){unsubAss();unsubAss=null;}
+  if(unsubTx){unsubTx();unsubTx=null;}
   await signOut(auth);
   showScreen('login');
 };
@@ -625,22 +529,18 @@ onAuthStateChanged(auth, async user => {
     if (user.email === ADMIN_EMAIL) document.getElementById('admin-nav').style.display='flex';
     startListeners(user.uid);
   } else {
-    if(unsubTx){unsubTx();unsubTx=null;} if(unsubAss){unsubAss();unsubAss=null;}
-    transactions=[]; assets=[];
+    if(unsubTx){unsubTx();unsubTx=null;}
+    transactions=[];
     document.getElementById('user-pill').style.display='none';
     document.getElementById('admin-nav').style.display='none';
     showScreen('login');
   }
 });
 function startListeners(uid) {
-  if(unsubTx) unsubTx(); if(unsubAss) unsubAss();
+  if(unsubTx) unsubTx();
   unsubTx = onSnapshot(query(collection(db,'users',uid,'transactions'),orderBy('createdAt','desc')),
     snap=>{setDbStatus(true);transactions=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();},
     err=>{setDbStatus(false);console.error(err);}
-  );
-  unsubAss = onSnapshot(query(collection(db,'users',uid,'assets'),orderBy('createdAt','desc')),
-    snap=>{assets=snap.docs.map(d=>({id:d.id,...d.data()}));renderInvestments();},
-    err=>console.error(err)
   );
 }
 
@@ -709,62 +609,38 @@ async function saveTx(tx) {
   try { await addDoc(collection(db,'users',user.uid,'transactions'),{...tx,createdAt:serverTimestamp()}); }
   catch(e) { alert('Erro: '+e.message); }
 }
-async function saveAssetDoc(a) {
-  const user=auth.currentUser; if(!user) return;
-  try { await addDoc(collection(db,'users',user.uid,'assets'),{...a,createdAt:serverTimestamp()}); }
-  catch(e) { alert('Erro: '+e.message); }
-}
 window.deleteTransaction = async id => {
   const user=auth.currentUser; if(!user) return;
   try { await deleteDoc(doc(db,'users',user.uid,'transactions',id)); } catch(e){alert('Erro:'+e.message);}
-};
-window.deleteAsset = async id => {
-  const user=auth.currentUser; if(!user) return;
-  if(!confirm('Remover ativo?')) return;
-  try { await deleteDoc(doc(db,'users',user.uid,'assets',id)); } catch(e){alert('Erro:'+e.message);}
 };
 
 // ── CATEGORIES
 const CATEGORIES = {
   income: [
-    {id:'salary',      label:'Salário',              icon:'💼', color:'#00e5a0'},
-    {id:'freelance',   label:'Freelance',             icon:'💻', color:'#5b8fff'},
-    {id:'beach',       label:'Aulas Beach Tennis',    icon:'🎾', color:'#ffd166'},
-    {id:'investment',  label:'Retorno Investimentos', icon:'📈', color:'#b388ff'},
-    {id:'rent_income', label:'Aluguel Recebido',      icon:'🏠', color:'#00d4cc'},
-    {id:'projects_in', label:'Projetos',              icon:'🚀', color:'#ff8c42'},
-    {id:'remind_in',   label:'Remind',                icon:'⚡', color:'#f72585'},
-    {id:'gift',        label:'Presentes / Bônus',     icon:'🎁', color:'#ff6eb4'},
-    {id:'other_in',    label:'Outros',                icon:'💰', color:'#7c6fff'},
+    {id:'salary',      label:'Salário',          icon:'💼', color:'#00e5a0'},
+    {id:'freelance',   label:'Freelance',         icon:'💻', color:'#5b8fff'},
+    {id:'rent_income', label:'Aluguel Recebido',  icon:'🏠', color:'#00d4cc'},
+    {id:'gift',        label:'Presentes / Bônus', icon:'🎁', color:'#ff6eb4'},
+    {id:'other_in',    label:'Outros',            icon:'💰', color:'#7c6fff'},
   ],
   expense: [
-    {id:'food',          label:'Alimentação',    icon:'🍽️', color:'#ff4d6d'},
-    {id:'transport',     label:'Transporte',     icon:'🚗', color:'#ff8c42'},
-    {id:'leisure',       label:'Lazer',          icon:'🎮', color:'#ffd166'},
-    {id:'health',        label:'Saúde',          icon:'🏥', color:'#00e5a0'},
-    {id:'housing',       label:'Moradia',        icon:'🏘️', color:'#5b8fff'},
-    {id:'invest_out',    label:'Investimentos',  icon:'💎', color:'#b388ff'},
-    {id:'education',     label:'Educação',       icon:'📚', color:'#00d4cc'},
-    {id:'beach_exp',     label:'Beach Tennis',   icon:'🎾', color:'#ffd166'},
-    {id:'escola',        label:'Escola',         icon:'🏫', color:'#5b8fff'},
-    {id:'projects_out',  label:'Projetos',       icon:'🚀', color:'#ff8c42'},
-    {id:'remind_out',    label:'Remind',         icon:'⚡', color:'#f72585'},
-    {id:'clothing',      label:'Roupas',         icon:'👕', color:'#ff6eb4'},
-    {id:'subscriptions', label:'Assinaturas',    icon:'📱', color:'#7c6fff'},
-    {id:'other_out',     label:'Outros',         icon:'💸', color:'#aaaacc'},
+    {id:'food',          label:'Alimentação',  icon:'🍽️', color:'#ff4d6d'},
+    {id:'transport',     label:'Transporte',   icon:'🚗', color:'#ff8c42'},
+    {id:'leisure',       label:'Lazer',        icon:'🎮', color:'#ffd166'},
+    {id:'health',        label:'Saúde',        icon:'🏥', color:'#00e5a0'},
+    {id:'housing',       label:'Moradia',      icon:'🏘️', color:'#5b8fff'},
+    {id:'education',     label:'Educação',     icon:'📚', color:'#00d4cc'},
+    {id:'clothing',      label:'Roupas',       icon:'👕', color:'#ff6eb4'},
+    {id:'subscriptions', label:'Assinaturas',   icon:'📱', color:'#7c6fff'},
+    {id:'other_out',     label:'Outros',        icon:'💸', color:'#aaaacc'},
   ]
 };
-const ALL_CATS     = [...CATEGORIES.income,...CATEGORIES.expense];
-const getCat       = id => ALL_CATS.find(c=>c.id===id)||{label:id,icon:'•',color:'#7c6fff'};
-const INVEST_IN    = ['investment'];
-const INVEST_OUT   = ['invest_out'];
-const REMIND_CATS  = ['remind_in','remind_out'];
-const ASSET_TYPES  = {acoes:'📊 Ações',fiis:'🏢 FIIs',tesouro:'🏛️ Tesouro',crypto:'₿ Cripto',renda_fixa:'💰 Renda Fixa',etf:'📦 ETF',outros:'📁 Outros'};
-const ASSET_COLORS = {acoes:'#5b8fff',fiis:'#00d4cc',tesouro:'#00e5a0',crypto:'#ffd166',renda_fixa:'#b388ff',etf:'#ff8c42',outros:'#aaaacc'};
+const ALL_CATS = [...CATEGORIES.income,...CATEGORIES.expense];
+const getCat   = id => ALL_CATS.find(c=>c.id===id)||{label:id,icon:'•',color:'#7c6fff'};
 
 // ── STATE
-let transactions=[], assets=[];
-let currentType='expense', currentFilter='all', invFilter='all';
+let transactions = [];
+let currentType='expense', currentFilter='all';
 let currentMonth=new Date().getMonth(), currentYear=new Date().getFullYear();
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -784,12 +660,10 @@ function goTo(page,el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   if(el) el.classList.add('active');
-  if(page==='dashboard')   renderDashboard();
+  if(page==='dashboard')    renderDashboard();
   if(page==='transactions') renderTransactions();
-  if(page==='categories')  renderCategories();
-  if(page==='investments') renderInvestments();
-  if(page==='remind')      renderRemind();
-  if(page==='admin')       renderAdminPanel();
+  if(page==='categories')   renderCategories();
+  if(page==='admin')        renderAdminPanel();
   if(window.innerWidth<=700) document.getElementById('sidebar').classList.remove('open');
 }
 function goToAll(){goTo('transactions',document.querySelectorAll('.nav-item')[1]);}
@@ -884,29 +758,20 @@ function renderDashboard() {
   const income =mTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
   const expense=mTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
   const balance=income-expense;
-  const invIn  =mTx.filter(t=>INVEST_IN.includes(t.cat)).reduce((a,t)=>a+t.amount,0);
-  const invOut =mTx.filter(t=>INVEST_OUT.includes(t.cat)).reduce((a,t)=>a+t.amount,0);
-  const opIn   =mTx.filter(t=>t.type==='income'&&!INVEST_IN.includes(t.cat)&&!REMIND_CATS.includes(t.cat)).reduce((a,t)=>a+t.amount,0);
-  const opOut  =mTx.filter(t=>t.type==='expense'&&!INVEST_OUT.includes(t.cat)&&!REMIND_CATS.includes(t.cat)).reduce((a,t)=>a+t.amount,0);
-  const opNet  =opIn-opOut, invNet=invIn-invOut;
 
   document.getElementById('stat-income').textContent  =fmt(income);
   document.getElementById('stat-expense').textContent =fmt(expense);
   document.getElementById('stat-balance').textContent =fmt(balance);
-  document.getElementById('stat-invest').textContent  =fmt(invIn+invOut);
   document.getElementById('stat-balance').style.color =balance>=0?'var(--green)':'var(--red)';
   document.getElementById('stat-income-count').textContent =mTx.filter(t=>t.type==='income').length+' entradas';
   document.getElementById('stat-expense-count').textContent=mTx.filter(t=>t.type==='expense').length+' saídas';
   document.getElementById('stat-balance-sub').innerHTML=balance>=0?'<span class="up">▲ Positivo</span> no azul':'<span class="dn">▼ Negativo</span> gastos maiores';
 
-  document.getElementById('p-op-in').textContent  ='+ '+fmt(opIn);
-  document.getElementById('p-op-out').textContent ='− '+fmt(opOut);
+  const opNet=income-expense;
   const netEl=document.getElementById('p-op-net');
+  document.getElementById('p-op-in').textContent  ='+ '+fmt(income);
+  document.getElementById('p-op-out').textContent ='− '+fmt(expense);
   netEl.textContent=(opNet>=0?'+ ':'− ')+fmt(opNet); setProfitColor(opNet,netEl);
-  document.getElementById('p-inv-in').textContent  ='+ '+fmt(invIn);
-  document.getElementById('p-inv-out').textContent ='− '+fmt(invOut);
-  const invNetEl=document.getElementById('p-inv-net');
-  invNetEl.textContent=(invNet>=0?'+ ':'− ')+fmt(invNet); setProfitColor(invNet,invNetEl);
 
   updateSidebarBalance();
   renderLineChart();
@@ -973,112 +838,14 @@ function renderCategories() {
   document.getElementById('cat-month-display').textContent=MONTHS[currentMonth]+' '+currentYear;
 }
 
-// ── INVESTMENTS
-let patrimonyChart,assetDonutChart;
-function switchInvTab(tab,el) {
-  document.querySelectorAll('.inv-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.inv-section').forEach(s=>s.classList.remove('active'));
-  el.classList.add('active'); document.getElementById('inv-'+tab).classList.add('active');
-  if(tab==='patrimonio') renderPatrimonyCharts();
-}
-function setInvFilter(f,el){invFilter=f;document.querySelectorAll('#inv-aportes .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderInvestments();}
-function renderInvestments() {
-  const totCurrent =assets.reduce((a,s)=>a+s.current,0);
-  const totInvested=assets.reduce((a,s)=>a+s.invested,0);
-  const totReturn  =totCurrent-totInvested;
-  const pct        =totInvested>0?(totReturn/totInvested*100):0;
-  document.getElementById('inv-total').textContent   =fmt(totCurrent);
-  document.getElementById('inv-invested').textContent=fmt(totInvested);
-  const retEl=document.getElementById('inv-return');
-  retEl.textContent=(totReturn>=0?'+ ':'− ')+fmt(totReturn);
-  retEl.style.color=totReturn>=0?'var(--green)':'var(--red)';
-  document.getElementById('inv-return-pct').textContent=(totReturn>=0?'+':'')+pct.toFixed(2)+'% de retorno';
-
-  const ag=document.getElementById('asset-grid');
-  ag.innerHTML=assets.length?assets.map(a=>{
-    const ret=a.current-a.invested, p=a.invested>0?(ret/a.invested*100):0, isPos=ret>=0;
-    const col=ASSET_COLORS[a.type]||'#7c6fff';
-    return `<div class="asset-card"><button class="asset-del" onclick="deleteAsset('${a.id}')">✕</button>
-      <div class="asset-header"><div class="asset-ticker">${a.ticker}</div><span class="asset-type-badge" style="background:${col}20;color:${col}">${ASSET_TYPES[a.type]||a.type}</span></div>
-      <div class="asset-current">${fmt(a.current)}</div><div class="asset-invested">Investido: ${fmt(a.invested)}</div>
-      <div class="asset-return"><span class="asset-return-val ${isPos?'pos':'neg'}">${isPos?'+ ':'− '}${fmt(ret)}</span><span class="asset-return-pct ${isPos?'pos':'neg'}">${isPos?'+':''}${p.toFixed(2)}%</span></div>
-      ${a.note?`<div style="margin-top:10px;font-size:12px;color:var(--muted)">${a.note}</div>`:''}
-    </div>`;
-  }).join(''):'<div class="empty" style="grid-column:1/-1"><div class="emoji">💼</div><p><strong>Nenhum ativo cadastrado</strong></p><p style="margin-top:6px;font-size:13px">Clique em + Ativo para adicionar</p></div>';
-
-  let invTx=transactions.filter(t=>INVEST_IN.includes(t.cat)||INVEST_OUT.includes(t.cat)).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(invFilter==='income') invTx=invTx.filter(t=>t.type==='income');
-  if(invFilter==='expense') invTx=invTx.filter(t=>t.type==='expense');
-  document.getElementById('inv-tx-list').innerHTML=invTx.length?invTx.map(txHTML).join(''):emptyHTML('Nenhum aporte ou rendimento','Adicione transações com categoria Investimentos');
-}
-function renderPatrimonyCharts() {
-  const labels=[],patriData=[];
-  for(let i=5;i>=0;i--){
-    let m=currentMonth-i,y=currentYear; if(m<0){m+=12;y--;}
-    labels.push(MONTHS[m].slice(0,3)+' '+y);
-    const cum=transactions.filter(t=>{const d=new Date(t.date+'T12:00:00');return(d.getFullYear()<y)||(d.getFullYear()===y&&d.getMonth()<=m);});
-    const val=cum.reduce((a,t)=>INVEST_OUT.includes(t.cat)?a+t.amount:INVEST_IN.includes(t.cat)?a-t.amount:a,0);
-    patriData.push(Math.max(0,val));
-  }
-  const totCurrent=assets.reduce((a,s)=>a+s.current,0);
-  if(totCurrent>0) patriData[patriData.length-1]=totCurrent;
-  const pCtx=document.getElementById('chart-patrimony').getContext('2d');
-  if(patrimonyChart)patrimonyChart.destroy();
-  patrimonyChart=new Chart(pCtx,{type:'line',data:{labels,datasets:[{label:'Patrimônio',data:patriData,borderColor:'#b388ff',backgroundColor:'#b388ff15',borderWidth:2.5,pointBackgroundColor:'#b388ff',pointRadius:5,tension:.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7070a0',font:{family:'DM Sans',size:12},boxWidth:12}}},scales:{x:{grid:{color:'#2a2a45'},ticks:{color:'#7070a0',font:{family:'DM Sans',size:11}}},y:{grid:{color:'#2a2a45'},ticks:{color:'#7070a0',font:{family:'DM Sans'},callback:v=>'R$'+(v>=1000?(v/1000).toFixed(1)+'k':v)}}}}});
-  const typeMap={};
-  assets.forEach(a=>{typeMap[a.type]=(typeMap[a.type]||0)+a.current;});
-  const tEntries=Object.entries(typeMap);
-  const adCtx=document.getElementById('chart-asset-donut').getContext('2d');
-  if(assetDonutChart)assetDonutChart.destroy();
-  if(!tEntries.length)return;
-  assetDonutChart=new Chart(adCtx,{type:'doughnut',data:{labels:tEntries.map(([t])=>ASSET_TYPES[t]||t),datasets:[{data:tEntries.map(([,v])=>v),backgroundColor:tEntries.map(([t])=>(ASSET_COLORS[t]||'#7c6fff')+'cc'),borderColor:'#13131a',borderWidth:3,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#7070a0',font:{family:'DM Sans',size:11},boxWidth:10,padding:12}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});
-}
-
-// ── REMIND
-let remindLineChart,remindDonutChart;
-function renderRemind() {
-  const rTx=transactions.filter(t=>REMIND_CATS.includes(t.cat));
-  const rInc=rTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-  const rExp=rTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-  const rBal=rInc-rExp;
-  document.getElementById('remind-income').textContent =fmt(rInc);
-  document.getElementById('remind-expense').textContent=fmt(rExp);
-  document.getElementById('remind-balance').textContent=fmt(rBal);
-  document.getElementById('remind-balance').style.color=rBal>=0?'var(--remind)':'var(--red)';
-  document.getElementById('remind-income-sub').textContent =rTx.filter(t=>t.type==='income').length+' receitas';
-  document.getElementById('remind-expense-sub').textContent=rTx.filter(t=>t.type==='expense').length+' gastos';
-  document.getElementById('remind-balance-sub').innerHTML=rBal>=0?'<span style="color:var(--remind)">▲</span> saldo positivo':'<span class="dn">▼</span> mais gastos que receitas';
-
-  const labels=[],rI=[],rE=[];
-  for(let i=5;i>=0;i--){
-    let m=currentMonth-i,y=currentYear; if(m<0){m+=12;y--;}
-    labels.push(MONTHS[m].slice(0,3));
-    const mt=rTx.filter(t=>{const d=new Date(t.date+'T12:00:00');return d.getMonth()===m&&d.getFullYear()===y;});
-    rI.push(mt.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0));
-    rE.push(mt.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0));
-  }
-  const rlCtx=document.getElementById('chart-remind-line').getContext('2d');
-  if(remindLineChart)remindLineChart.destroy();
-  remindLineChart=new Chart(rlCtx,{type:'bar',data:{labels,datasets:[{label:'Receitas',data:rI,backgroundColor:'#f7258540',borderColor:'#f72585',borderWidth:2,borderRadius:6},{label:'Gastos',data:rE,backgroundColor:'#ff4d6d30',borderColor:'#ff4d6d',borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7070a0',font:{family:'DM Sans',size:12},boxWidth:12}}},scales:{x:{grid:{color:'#2a2a45'},ticks:{color:'#7070a0',font:{family:'DM Sans'}}},y:{grid:{color:'#2a2a45'},ticks:{color:'#7070a0',font:{family:'DM Sans'},callback:v=>'R$'+(v>=1000?(v/1000).toFixed(1)+'k':v)}}}}});
-
-  const rdCtx=document.getElementById('chart-remind-donut').getContext('2d');
-  if(remindDonutChart)remindDonutChart.destroy();
-  if(rInc>0||rExp>0){
-    remindDonutChart=new Chart(rdCtx,{type:'doughnut',data:{labels:['Receitas','Gastos'],datasets:[{data:[rInc,rExp],backgroundColor:['#f7258560','#ff4d6d60'],borderColor:'#13131a',borderWidth:3,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#7070a0',font:{family:'DM Sans',size:11},boxWidth:10,padding:12}},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});
-  }
-  document.getElementById('remind-tx-list').innerHTML=[...rTx].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(txHTML).join('')||emptyHTML('Nenhuma transação Remind','Use os botões acima para registrar');
-}
-
 // ── RENDER ALL
-function renderAll(){renderDashboard();renderTransactions();renderCategories();renderInvestments();renderRemind();updateSidebarBalance();}
+function renderAll(){renderDashboard();renderTransactions();renderCategories();updateSidebarBalance();}
 
 // ── EXPOSE
 window.goTo=goTo; window.goToAll=goToAll; window.toggleSidebar=toggleSidebar;
 window.changeMonth=changeMonth; window.openModal=openModal; window.closeModal=closeModal;
 window.closeModalOnBg=closeModalOnBg; window.setType=setType; window.saveTransaction=saveTransaction;
-window.setFilter=setFilter; window.setInvFilter=setInvFilter; window.switchInvTab=switchInvTab;
-window.openAssetModal=openAssetModal; window.closeAssetModal=closeAssetModal;
-window.closeAssetModalOnBg=closeAssetModalOnBg; window.saveAsset=saveAsset;
+window.setFilter=setFilter;
 
 // ── INIT
 updateMonthDisplays();
