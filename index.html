@@ -17,7 +17,6 @@
   --blue:#5b8fff; --yellow:#ffd166; --purple:#b388ff; --teal:#00d4cc;
   --orange:#ff8c42; --pink:#ff6eb4;
   --accent:#7c6fff; --accent-dim:#7c6fff20;
-  --remind:#f72585; --remind-dim:#f7258515;
   --radius:14px; --radius-sm:8px;
 }
 html { scroll-behavior:smooth; }
@@ -36,7 +35,6 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
 .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-sm); font-size:14px; font-weight:400; color:var(--muted); cursor:pointer; transition:all .15s; margin-bottom:2px; }
 .nav-item:hover { background:var(--surface2); color:var(--text); }
 .nav-item.active { background:var(--accent-dim); color:var(--accent); font-weight:500; }
-.nav-item.remind-nav.active { background:var(--remind-dim); color:var(--remind); }
 .nav-item .icon { font-size:16px; width:20px; text-align:center; }
 .sidebar-footer { margin-top:auto; padding-top:20px; border-top:1px solid var(--border); }
 .user-pill { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:var(--radius-sm); background:var(--surface2); margin-bottom:10px; cursor:pointer; transition:background .15s; }
@@ -86,13 +84,11 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index
 .stat-card.red::before { background:var(--red); }
 .stat-card.blue::before { background:var(--blue); }
 .stat-card.purple::before { background:var(--purple); }
-.stat-card.remind-card::before { background:var(--remind); }
 .stat-label { font-size:12px; color:var(--muted); font-weight:400; margin-bottom:10px; letter-spacing:.3px; }
 .stat-value { font-family:'Syne',sans-serif; font-size:26px; font-weight:700; margin-bottom:6px; }
 .stat-value.green { color:var(--green); }
 .stat-value.red { color:var(--red); }
 .stat-value.blue { color:var(--blue); }
-.stat-value.remind { color:var(--remind); }
 .stat-sub { font-size:12px; color:var(--muted); }
 .stat-sub .up { color:var(--green); }
 .stat-sub .dn { color:var(--red); }
@@ -715,31 +711,6 @@ async function saveTransaction() {
   closeModal();
 }
 
-// ── MODAL ASSET
-function openAssetModal() {
-  document.getElementById('asset-modal-overlay').classList.add('open');
-  ['asset-ticker','asset-invested','asset-current','asset-note'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('asset-date').value=new Date().toISOString().split('T')[0];
-}
-function closeAssetModal(){document.getElementById('asset-modal-overlay').classList.remove('open');}
-function closeAssetModalOnBg(e){if(e.target===document.getElementById('asset-modal-overlay'))closeAssetModal();}
-async function saveAsset() {
-  const ticker=document.getElementById('asset-ticker').value.trim();
-  const type=document.getElementById('asset-type').value;
-  const date=document.getElementById('asset-date').value;
-  const invested=parseFloat(document.getElementById('asset-invested').value);
-  const current=parseFloat(document.getElementById('asset-current').value);
-  const note=document.getElementById('asset-note').value.trim();
-  if(!ticker){alert('Informe o ticker/nome.');return;}
-  if(!invested||invested<=0){alert('Informe o valor investido.');return;}
-  if(!current||current<=0){alert('Informe o valor atual.');return;}
-  const btn=document.querySelector('#asset-modal-overlay .btn-primary');
-  btn.textContent='Salvando...'; btn.disabled=true;
-  await saveAssetDoc({ticker,type,date,invested,current,note});
-  btn.textContent='Adicionar Ativo'; btn.disabled=false;
-  closeAssetModal();
-}
-
 // ── TX HTML
 function txHTML(tx) {
   const cat=getCat(tx.cat); const isIn=tx.type==='income';
@@ -846,7 +817,6 @@ window.goTo=goTo; window.goToAll=goToAll; window.toggleSidebar=toggleSidebar;
 window.changeMonth=changeMonth; window.openModal=openModal; window.closeModal=closeModal;
 window.closeModalOnBg=closeModalOnBg; window.setType=setType; window.saveTransaction=saveTransaction;
 window.setFilter=setFilter;
-
 // ── INIT
 updateMonthDisplays();
 </script>
