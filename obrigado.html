@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Compra confirmada — Fintrack</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05050d;
+  --surface:#0d0d1a;
+  --surface2:#131320;
+  --border:#1e1e35;
+  --border2:#2a2a45;
+  --text:#eeeef5;
+  --muted:#6666a0;
+  --green:#00e5a0;
+  --green-dim:#00e5a012;
+  --green-glow:#00e5a035;
+  --accent:#7c6fff;
+  --accent-dim:#7c6fff15;
+  --r:16px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+  line-height:1.6;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* BACKGROUND GLOW */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%,#00e5a018 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%,#7c6fff12 0%,transparent 60%);
+}
+
+/* NOISE */
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  opacity:.3;
+}
+
+.wrap{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:480px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+}
+
+/* LOGO */
+.logo{
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:900;
+  font-size:24px;
+  letter-spacing:-1px;
+  margin-bottom:32px;
+  opacity:.7;
+}
+.logo span{color:var(--green)}
+
+/* SUCCESS ICON */
+.success-ring{
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  background:var(--green-dim);
+  border:2px solid var(--green-glow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  margin-bottom:28px;
+  animation:popIn .5s cubic-bezier(.175,.885,.32,1.275) both;
+  box-shadow:0 0 40px var(--green-glow);
+}
+@keyframes popIn{
+  from{opacity:0;transform:scale(.6)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* HEADINGS */
+h1{
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:900;
+  font-size:clamp(28px,7vw,38px);
+  letter-spacing:-1.5px;
+  text-align:center;
+  line-height:1.1;
+  margin-bottom:12px;
+  animation:fadeUp .5s .1s ease both;
+}
+h1 span{color:var(--green)}
+
+.subtitle{
+  font-size:15px;
+  color:var(--muted);
+  text-align:center;
+  margin-bottom:36px;
+  line-height:1.7;
+  animation:fadeUp .5s .2s ease both;
+  max-width:380px;
+}
+
+/* STEPS CARD */
+.card{
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:28px 24px;
+  margin-bottom:16px;
+  animation:fadeUp .5s .3s ease both;
+}
+
+.card-title{
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:800;
+  font-size:13px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:20px;
+}
+
+.steps{display:flex;flex-direction:column;gap:0}
+
+.step{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  padding:16px 0;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.step:last-child{border-bottom:none;padding-bottom:0}
+.step:first-child{padding-top:0}
+
+.step-num{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:var(--accent-dim);
+  border:1px solid var(--accent)40;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:900;
+  font-size:14px;
+  color:var(--accent);
+  flex-shrink:0;
+  margin-top:2px;
+}
+
+.step-body{}
+.step-title{
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:800;
+  font-size:15px;
+  margin-bottom:4px;
+  letter-spacing:-.2px;
+}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.step-desc strong{color:var(--text)}
+.step-desc .highlight{
+  display:inline-block;
+  background:var(--green-dim);
+  border:1px solid var(--green-glow);
+  color:var(--green);
+  font-size:12px;
+  font-weight:600;
+  padding:2px 10px;
+  border-radius:100px;
+  margin-top:6px;
+  letter-spacing:.3px;
+}
+
+/* CTA BUTTON */
+.btn-email{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:17px 24px;
+  background:var(--green);
+  color:#05050d;
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:900;
+  font-size:16px;
+  border-radius:100px;
+  text-decoration:none;
+  transition:all .2s;
+  border:none;
+  cursor:pointer;
+  letter-spacing:-.2px;
+  animation:fadeUp .5s .4s ease both;
+  box-shadow:0 4px 30px var(--green-glow);
+}
+.btn-email:hover{
+  background:#00ffb3;
+  box-shadow:0 4px 50px var(--green-glow);
+  transform:translateY(-2px);
+}
+.btn-email:active{transform:translateY(0)}
+
+.btn-email .icon{font-size:18px}
+
+/* EMAIL DISPLAY */
+.email-display{
+  margin-top:14px;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+}
+.email-display strong{
+  color:var(--text);
+  font-weight:500;
+  background:var(--surface2);
+  padding:3px 10px;
+  border-radius:6px;
+  border:1px solid var(--border2);
+  display:inline-block;
+  margin-top:4px;
+  letter-spacing:.3px;
+}
+
+/* AFTER EMAIL SECTION */
+.after-card{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px 20px;
+  margin-top:4px;
+  animation:fadeUp .5s .5s ease both;
+}
+.after-title{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:12px;
+  font-weight:500;
+}
+.after-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  color:var(--muted);
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+}
+.after-info:last-child{border-bottom:none;padding-bottom:0}
+.after-info .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);flex-shrink:0;
+}
+
+/* ACCESS BUTTON */
+.btn-access{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:15px 24px;
+  background:transparent;
+  color:var(--text);
+  font-family:'Cabinet Grotesk',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  border-radius:100px;
+  text-decoration:none;
+  border:1px solid var(--border2);
+  transition:all .2s;
+  cursor:pointer;
+  margin-top:16px;
+  animation:fadeUp .5s .6s ease both;
+}
+.btn-access:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:var(--accent-dim);
+}
+
+/* FOOTER */
+.footer-note{
+  margin-top:28px;
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+  animation:fadeUp .5s .7s ease both;
+  line-height:1.7;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* MOBILE TWEAKS */
+@media(max-width:400px){
+  body{padding:20px 12px}
+  .card{padding:22px 18px}
+  h1{font-size:26px}
+  .btn-email{font-size:15px;padding:15px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- LOGO -->
+  <div class="logo">fin<span>track</span></div>
+
+  <!-- SUCCESS -->
+  <div class="success-ring">✅</div>
+
+  <h1>Compra <span>confirmada!</span><br>Bem-vindo ao Fintrack</h1>
+  <p class="subtitle">Seu acesso está quase pronto. Siga os passos abaixo para liberar sua conta em até 24 horas.</p>
+
+  <!-- STEPS -->
+  <div class="card">
+    <div class="card-title">📋 Como liberar seu acesso</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Clique no botão abaixo</div>
+          <div class="step-desc">Ele vai abrir seu e-mail já com o destinatário e assunto preenchidos. Você só precisa enviar.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Informe seu e-mail do Google</div>
+          <div class="step-desc">No corpo do e-mail, escreva qual é o seu e-mail do Google (Gmail). É ele que será usado para entrar no app.<br>
+          <span class="highlight">⚠️ Precisa ser um e-mail Google/Gmail</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Aguarde a liberação</div>
+          <div class="step-desc">Assim que recebermos seu e-mail, liberamos o acesso em até <strong>24 horas</strong>. Você receberá uma confirmação.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <a class="btn-email" id="btn-email"
+     href="mailto:phekiwify@gmail.com?subject=Acesso%20Fintrack%20-%20Meu%20e-mail%20Google&body=Ol%C3%A1%2C%20acabei%20de%20comprar%20o%20Fintrack!%0A%0AMeu%20e-mail%20do%20Google%20para%20liberar%20o%20acesso%20%C3%A9%3A%0A%0A(escreva%20seu%20e-mail%20aqui)">
+    <span class="icon">✉️</span>
+    Enviar e-mail para liberar acesso
+  </a>
+
+  <div class="email-display">
+    Será enviado para<br>
+    <strong>phekiwify@gmail.com</strong>
+  </div>
+
+  <!-- AFTER INFO -->
+  <div class="after-card">
+    <div class="after-title">Após receber a confirmação de acesso:</div>
+    <div class="after-info"><div class="dot"></div>Acesse o link do app que será enviado por e-mail</div>
+    <div class="after-info"><div class="dot"></div>Clique em "Entrar com Google" usando o e-mail informado</div>
+    <div class="after-info"><div class="dot"></div>Pronto — seu dashboard estará esperando por você</div>
+  </div>
+
+  <!-- DIRECT ACCESS -->
+  <a class="btn-access" href="https://phekkj.github.io/fintrack/fintrack">
+    🔗 Já tenho acesso — ir para o app
+  </a>
+
+  <div class="footer-note">
+    Dúvidas? Entre em contato pelo e-mail <strong>phekiwify@gmail.com</strong><br>
+    Respondemos em até 24 horas · Acesso vitalício garantido
+  </div>
+
+</div>
+
+</body>
+</html>
